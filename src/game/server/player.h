@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2009, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2009, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -583,7 +583,7 @@ public:
 	virtual float			GetHeldObjectMass( IPhysicsObject *pHeldObject );
 
 	void					CheckSuitUpdate();
-	void					SetSuitUpdate(char *name, int fgroup, int iNoRepeat);
+	void					SetSuitUpdate(const char *name, int fgroup, int iNoRepeat);
 	virtual void			UpdateGeigerCounter( void );
 	void					CheckTimeBasedDamage( void );
 

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2008, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2008, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:		Client handler implementations for instruction players how to play
 //
@@ -1695,7 +1695,7 @@ void CScriptedIconLesson::InitElementsFromKeys( CUtlVector< LessonElement_t > *p
 		pchToken = strtok( szSubKeyName, " " );
 		_fieldtypes paramType = LessonParamTypeFromString( pchToken );
 
-		char *pchParam = "";
+		const char *pchParam = "";
 
 		if ( paramType != FIELD_VOID )
 		{

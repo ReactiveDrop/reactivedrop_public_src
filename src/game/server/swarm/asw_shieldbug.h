@@ -29,7 +29,7 @@ public:
 	float GetSequenceGroundSpeed( int iSequence );
 	int MeleeAttack1Conditions( float flDot, float flDist );
 	int MeleeAttack2Conditions ( float flDot, float flDist );
-	void MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove );
+	void MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove );
 	float MaxYawSpeed( void );
 	void HandleAnimEvent( animevent_t *pEvent );	
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_SHIELDBUG; }	

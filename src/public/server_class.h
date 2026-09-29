@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -27,7 +27,7 @@ extern ServerClass *g_pServerClassHead;
 class ServerClass
 {
 public:
-				ServerClass( char *pNetworkName, SendTable *pTable )
+				ServerClass( const char *pNetworkName, SendTable *pTable )
 				{
 					m_pNetworkName = pNetworkName;
 					m_pTable = pTable;
@@ -71,7 +71,7 @@ public:
 
 
 public:
-	char						*m_pNetworkName;
+	const char						*m_pNetworkName;
 	SendTable					*m_pTable;
 	ServerClass					*m_pNext;
 	int							m_ClassID;	// Managed by the engine.

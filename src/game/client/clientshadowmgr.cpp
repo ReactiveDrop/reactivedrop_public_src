@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -290,12 +290,12 @@ void CTextureAllocator::InitRenderTargets( void )
 {
 #if !defined( _X360 )
 	// don't need depth buffer for shadows
-	m_TexturePage.InitRenderTarget( TEXTURE_PAGE_SIZE, TEXTURE_PAGE_SIZE, RT_SIZE_NO_CHANGE, IMAGE_FORMAT_ARGB8888, MATERIAL_RT_DEPTH_NONE, false, "_rt_Shadows" );
+	m_TexturePage.InitRenderTarget( TEXTURE_PAGE_SIZE, TEXTURE_PAGE_SIZE, RT_SIZE_NO_CHANGE, IMAGE_FORMAT_ARGB8888, MATERIAL_RT_DEPTH_NONE, false, const_cast<char *>( "_rt_Shadows" ) );
 #else
 	// unfortunate explicit management required for this render target
 	// 32bpp edram is only largest shadow fragment, but resolved to actual shadow atlas
 	// because full-res 1024x1024 shadow buffer is too large for EDRAM
-	m_TexturePage.InitRenderTargetTexture( TEXTURE_PAGE_SIZE, TEXTURE_PAGE_SIZE, RT_SIZE_NO_CHANGE, IMAGE_FORMAT_ARGB8888, MATERIAL_RT_DEPTH_NONE, false, "_rt_Shadows" );
+	m_TexturePage.InitRenderTargetTexture( TEXTURE_PAGE_SIZE, TEXTURE_PAGE_SIZE, RT_SIZE_NO_CHANGE, IMAGE_FORMAT_ARGB8888, MATERIAL_RT_DEPTH_NONE, false, const_cast<char *>( "_rt_Shadows" ) );
 
 #ifdef RTT_TEXTURE_SIZE_640
 	// use 4x multisampling for smoother shadows
@@ -1055,7 +1055,7 @@ private:
 	// Initialize, shutdown render-to-texture shadows
 	void InitDepthTextureShadows();
 	void ShutdownDepthTextureShadows();
-	friend static void RDMaxDepthTextureShadowsChanged( IConVar *, const char *, float );
+	friend void RDMaxDepthTextureShadowsChanged( IConVar *, const char *, float );
 
 	// Initialize, shutdown render-to-texture shadows
 	void InitRenderToTextureShadows();
@@ -1667,10 +1667,10 @@ void CClientShadowMgr::InitDepthTextureShadows()
 #if defined( _X360 )
 		// For the 360, we'll be rendering depth directly into the dummy depth and Resolve()ing to the depth texture.
 		// only need the dummy surface, don't care about color results
-		m_DummyColorTexture.InitRenderTargetTexture( 1, 1, RT_SIZE_OFFSCREEN, IMAGE_FORMAT_BGR565, MATERIAL_RT_DEPTH_SHARED, false, "_rt_ShadowDummy" );
+		m_DummyColorTexture.InitRenderTargetTexture( 1, 1, RT_SIZE_OFFSCREEN, IMAGE_FORMAT_BGR565, MATERIAL_RT_DEPTH_SHARED, false, const_cast<char *>( "_rt_ShadowDummy" ) );
 		m_DummyColorTexture.InitRenderTargetSurface( m_nDepthTextureResolution, m_nDepthTextureResolution, IMAGE_FORMAT_BGR565, false );
 #else
-		m_DummyColorTexture.InitRenderTarget( m_nDepthTextureResolution, m_nDepthTextureResolution, RT_SIZE_OFFSCREEN, nullFormat, MATERIAL_RT_DEPTH_NONE, false, "_rt_ShadowDummy" );
+		m_DummyColorTexture.InitRenderTarget( m_nDepthTextureResolution, m_nDepthTextureResolution, RT_SIZE_OFFSCREEN, nullFormat, MATERIAL_RT_DEPTH_NONE, false, const_cast<char *>( "_rt_ShadowDummy" ) );
 #endif
 
 		// Create some number of depth-stencil textures
@@ -1808,9 +1808,9 @@ void CClientShadowMgr::InitDeferredShadows()
 	if ( r_shadow_deferred_downsample.GetBool() )
 	{
 #if defined( _X360 )
-		m_downSampledNormals.InitRenderTargetTexture( DEFERRED_SHADOW_BUFFER_WIDTH, DEFERRED_SHADOW_BUFFER_HEIGHT, RT_SIZE_OFFSCREEN, IMAGE_FORMAT_ARGB8888, MATERIAL_RT_DEPTH_SEPARATE, false, "_rt_DownsampledNormals" );
+		m_downSampledNormals.InitRenderTargetTexture( DEFERRED_SHADOW_BUFFER_WIDTH, DEFERRED_SHADOW_BUFFER_HEIGHT, RT_SIZE_OFFSCREEN, IMAGE_FORMAT_ARGB8888, MATERIAL_RT_DEPTH_SEPARATE, false, const_cast<char *>( "_rt_DownsampledNormals" ) );
 		m_downSampledNormals.InitRenderTargetSurface( DEFERRED_SHADOW_BUFFER_WIDTH, DEFERRED_SHADOW_BUFFER_HEIGHT, IMAGE_FORMAT_ARGB8888, true );
-		m_downSampledDepth.InitRenderTargetTexture( DEFERRED_SHADOW_BUFFER_WIDTH, DEFERRED_SHADOW_BUFFER_HEIGHT, RT_SIZE_OFFSCREEN, IMAGE_FORMAT_D24FS8, MATERIAL_RT_DEPTH_NONE, false, "_rt_DownsampledDepth" );
+		m_downSampledDepth.InitRenderTargetTexture( DEFERRED_SHADOW_BUFFER_WIDTH, DEFERRED_SHADOW_BUFFER_HEIGHT, RT_SIZE_OFFSCREEN, IMAGE_FORMAT_D24FS8, MATERIAL_RT_DEPTH_NONE, false, const_cast<char *>( "_rt_DownsampledDepth" ) );
 #endif
 	}
 }

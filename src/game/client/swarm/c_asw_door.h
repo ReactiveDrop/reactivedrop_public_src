@@ -23,7 +23,7 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t type );
 	Class_T		Classify( void ) { return (Class_T) CLASS_ASW_DOOR; }
 
-	virtual void					ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName );
+	virtual void					ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName );
 
 	Vector GetWeldFacingPoint( C_BaseEntity* pOther );	// the point a marine should look to weld this door
 	Vector GetSparkNormal( C_BaseEntity* pOther );	// the angle sparks should shoot out when welding

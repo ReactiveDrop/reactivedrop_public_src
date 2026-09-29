@@ -6464,7 +6464,7 @@ const char *CNPC_Hunter::SelectRandomExpressionForState( NPC_STATE state )
 	if ( !hunter_random_expressions.GetBool() )
 		return NULL;
 
-	char *szExpressions[4] =
+	const char *szExpressions[4] =
 	{
 		"scenes/npc/hunter/hunter_scan.vcd",
 		"scenes/npc/hunter/hunter_eyeclose.vcd",

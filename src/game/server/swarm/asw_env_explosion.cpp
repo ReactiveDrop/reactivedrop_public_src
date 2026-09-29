@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Implements an explosion entity and a support spark shower entity.
 //
@@ -243,7 +243,7 @@ void ASWExplosionCreate( const Vector &center, const QAngle &angles,
 
 	CASWEnvExplosion *pExplosion = (CASWEnvExplosion*)CBaseEntity::Create( "asw_env_explosion", center, angles, pOwner );
 	Q_snprintf( buf,sizeof(buf), "%3d", magnitude );
-	char *szKeyName = "iDamage";
+	const char *szKeyName = "iDamage";
 	char *szValue = buf;
 	pExplosion->KeyValue( szKeyName, szValue );
 

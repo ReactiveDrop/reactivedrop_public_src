@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -40,7 +40,7 @@
 	{
 		if ( iIn == INVALID_NETWORKED_EHANDLE_VALUE )
 		{
-			return INVALID_EHANDLE_INDEX;
+			return EHANDLE( INVALID_EHANDLE_INDEX );
 		}
 		else
 		{

@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2004, Valve Corporation, All rights reserved. =======
+//====== Copyright Â© 1996-2004, Valve Corporation, All rights reserved. =======
 //
 // Purpose: languages definition
 //
@@ -14,9 +14,9 @@
 
 struct Language_t
 {	
-	char *m_pchName;
-	char *m_pchShortName;
-	char *m_pchVGUILocalizationName;
+	const char *m_pchName;
+	const char *m_pchShortName;
+	const char *m_pchVGUILocalizationName;
 	ELanguage m_ELanguage;
 };
 

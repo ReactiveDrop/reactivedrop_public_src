@@ -16,7 +16,7 @@ ObjectivePanel::ObjectivePanel(Panel *parent, const char *name) : Panel(parent, 
 	m_ObjectiveImagePanel->SetShouldScaleImage(true);
 
 	// create the blank objective text - note, label isn't actually a child of this class!
-	wchar_t *text = L"<objective>";
+	const wchar_t *text = L"<objective>";
 	m_ObjectiveLabel = new vgui::WrappedLabel(this, "ObjectivePanelLabel", text);
 	m_ObjectiveLabel->SetContentAlignment(vgui::Label::a_northwest);
 	

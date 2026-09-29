@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -92,7 +92,7 @@ public:
 
 	int				m_blinktoggle;
 
-	static int		AddGlobalFlexController( char *szName );
+	static int		AddGlobalFlexController( const char *szName );
 	static char const *GetGlobalFlexControllerName( int idx );
 
 	// bah, this should be unified with all prev/current stuff.

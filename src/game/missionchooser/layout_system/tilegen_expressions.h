@@ -78,8 +78,8 @@ public:
 	virtual bool LoadFromKeyValues( KeyValues *pKeyValues )
 	{ 
 		bool bSuccess = true;
-		bSuccess &= CreateExpressionFromKeyValuesBlock( pKeyValues, "param0", GetTypeName(), &m_pExpression[0] );
-		bSuccess &= CreateExpressionFromKeyValuesBlock( pKeyValues, "param1", GetTypeName(), &m_pExpression[1] );
+		bSuccess &= CreateExpressionFromKeyValuesBlock( pKeyValues, "param0", this->GetTypeName(), &m_pExpression[0] );
+		bSuccess &= CreateExpressionFromKeyValuesBlock( pKeyValues, "param1", this->GetTypeName(), &m_pExpression[1] );
 		return bSuccess;
 	}
 
@@ -244,7 +244,7 @@ public:
 
 	virtual bool LoadFromKeyValues( KeyValues *pKeyValues )
 	{ 
-		return CreateExpressionFromKeyValuesBlock( pKeyValues, "param", GetTypeName(), &m_pExpression );
+		return CreateExpressionFromKeyValuesBlock( pKeyValues, "param", this->GetTypeName(), &m_pExpression );
 	}
 
 	virtual TReturn Evaluate( CFreeVariableMap *pContext ) { return DirectEvaluate( pContext, m_pExpression->Evaluate( pContext ) ); }
@@ -651,7 +651,7 @@ public:
 
 	  virtual bool LoadFromKeyValues( KeyValues *pKeyValues )
 	  { 
-		  if ( !CreateExpressionFromKeyValuesBlock( pKeyValues, "variable", GetTypeName(), &m_pVariableNameExpression ) )
+		  if ( !CreateExpressionFromKeyValuesBlock( pKeyValues, "variable", this->GetTypeName(), &m_pVariableNameExpression ) )
 		  {
 			  Log_Warning( LOG_TilegenLayoutSystem, "No variable specified for CTilegenExpression_Variable in key values.\n" );
 			  return false;
@@ -751,19 +751,19 @@ public:
 
 			  if ( pRangeExpressionKV != NULL )
 			  {
-				  if ( !CreateExpressionFromKeyValuesBlock( pKeyValues, "range_expression", GetTypeName(), &m_pInputRangeExpression ) )
+				  if ( !CreateExpressionFromKeyValuesBlock( pKeyValues, "range_expression", this->GetTypeName(), &m_pInputRangeExpression ) )
 					  return false;
 			  }
 			  else if ( pRangeKV != NULL)
 			  {
-				  if ( !CreateRangeFromKeyValuesBlock( pKeyValues, "range", GetTypeName(), &m_pInputRange ) )
+				  if ( !CreateRangeFromKeyValuesBlock( pKeyValues, "range", this->GetTypeName(), &m_pInputRange ) )
 					  return false;
 			  }
 		  }
 
 		  if ( m_pMapFunction == NULL )
 		  {
-			  if ( !CreateExpressionFromKeyValuesBlock< TMapOutput >( pKeyValues, "map", GetTypeName(), &m_pMapFunction ) )
+			  if ( !CreateExpressionFromKeyValuesBlock< TMapOutput >( pKeyValues, "map", this->GetTypeName(), &m_pMapFunction ) )
 				  return false;
 		  }
 
@@ -771,7 +771,7 @@ public:
 		  {
 			  ITilegenExpression< TMapOutput > *pReduceFunction = NULL;
 			  // Create an empty instance of the binary function since we will never call Evaluate on it (just DirectEvaluate)
-			  CreateExpressionFromKeyValuesBlock< TMapOutput >( pKeyValues, "reduce", GetTypeName(), &pReduceFunction, false, true );
+			  CreateExpressionFromKeyValuesBlock< TMapOutput >( pKeyValues, "reduce", this->GetTypeName(), &pReduceFunction, false, true );
 			  m_pReduceFunction = static_cast< CTilegenExpression_Multi< TMapOutput > * >( pReduceFunction );
 		  }
 
@@ -855,7 +855,7 @@ class CTilegenExpression_CountRange : public CTilegenExpression_MapReduce< int, 
 {
 public:
 	CTilegenExpression_CountRange( ITilegenRange< TInput > *pRange = NULL ) :
-	  CTilegenExpression_MapReduce( pRange, new CTilegenExpression_LiteralInt( 1 ), new CTilegenExpression_Add(), "$$unused" )
+	  CTilegenExpression_MapReduce< int, TInput >( pRange, new CTilegenExpression_LiteralInt( 1 ), new CTilegenExpression_Add(), "$$unused" )
 	  {
 	  }
 };

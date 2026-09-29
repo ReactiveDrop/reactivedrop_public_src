@@ -582,7 +582,7 @@ void CRD_VGui_VScript::UpdateControlTable( ButtonCode_t iButton )
 	g_pScriptVM->SetValue( m_hControlTable, "look_x", flLookX / MAX_BUTTONSAMPLE );
 	g_pScriptVM->SetValue( m_hControlTable, "look_y", flLookY / MAX_BUTTONSAMPLE );
 
-	g_pScriptVM->SetValue( m_hControlTable, "focus", m_iControllerFocusIndex == -1 ? SCRIPT_VARIANT_NULL : m_ButtonDefs[m_iControllerFocusIndex]->m_hThis );
+	g_pScriptVM->SetValue( m_hControlTable, "focus", m_iControllerFocusIndex == -1 ? SCRIPT_VARIANT_NULL : ScriptVariant_t( m_ButtonDefs[m_iControllerFocusIndex]->m_hThis ) );
 }
 
 void CRD_VGui_VScript::InitButtonPanels( vgui::Panel *pParent )

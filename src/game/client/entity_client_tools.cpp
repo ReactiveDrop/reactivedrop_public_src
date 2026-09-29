@@ -1,4 +1,4 @@
-//====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
+//====== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. =======
 //
 // Purpose: 
 //
@@ -887,9 +887,10 @@ void CClientTools::ReloadParticleDefintions( const char *pFileName, const void *
 	//////////////
 	// Find any systems that depend on any system in the buffer
 	// slow, but necessary if we want live reloads to work - and doesn't happen too often
+	CUtlBuffer bufConfig( pBufData, nLen, CUtlBuffer::READ_ONLY );
 	CUtlVector<CUtlString> systemNamesToReload;
 
-	g_pParticleSystemMgr->GetParticleSystemsInBuffer( CUtlBuffer(pBufData, nLen, CUtlBuffer::READ_ONLY), &systemNamesToReload );
+	g_pParticleSystemMgr->GetParticleSystemsInBuffer( bufConfig, &systemNamesToReload );
 
 	CUtlVector<CNewParticleEffect*> toReplaceEffects;
 	CUtlVector<CUtlString> toReplaceNames;
@@ -929,7 +930,8 @@ void CClientTools::ReloadParticleDefintions( const char *pFileName, const void *
 
 	//////////////
 	// Load the data and stomp the old definitions
-	g_pParticleSystemMgr->ReadParticleConfigFile( CUtlBuffer(pBufData, nLen, CUtlBuffer::READ_ONLY), true );
+	CUtlBuffer bufLoadConfig( pBufData, nLen, CUtlBuffer::READ_ONLY );
+	g_pParticleSystemMgr->ReadParticleConfigFile( bufLoadConfig, true );
 
 	//////////////
 	// Now replace all of the systems with their new versions

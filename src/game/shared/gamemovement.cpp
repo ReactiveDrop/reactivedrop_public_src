@@ -604,7 +604,7 @@ void COM_Log( char *pszFile, char *fmt, ...)
 	va_list		argptr;
 	char		string[1024];
 	FileHandle_t fp;
-	char *pfilename;
+	const char *pfilename;
 	
 	if ( !pszFile )
 	{

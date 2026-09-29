@@ -274,7 +274,7 @@ void CASW_Simple_Alien::SetState( int iNewState )
 // Movement
 // =========================================
 
-void CASW_Simple_Alien::SetMoveTarget( Vector &vecTarget )
+void CASW_Simple_Alien::SetMoveTarget( const Vector &vecTarget )
 {
 	m_vecMoveTarget = vecTarget;
 	m_hMoveTarget = NULL;
@@ -684,7 +684,7 @@ bool CASW_Simple_Alien::ShouldAttack()
 	return ( dist < 100.0f );
 }
 
-void CASW_Simple_Alien::MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove )
+void CASW_Simple_Alien::MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove )
 {
 	Vector vecForceDir;
 

@@ -313,15 +313,15 @@ void TabbedGridDetails::ShowFullScreen()
 {
 	if ( g_hBriefingFrame )
 	{
-		SetParent( g_hBriefingFrame );
+		SetParent( g_hBriefingFrame.Get() );
 	}
 	else if ( GetClientModeASW()->m_hCampaignFrame )
 	{
-		SetParent( GetClientModeASW()->m_hCampaignFrame );
+		SetParent( GetClientModeASW()->m_hCampaignFrame.Get() );
 	}
 	else if ( GetClientModeASW()->m_hMissionCompleteFrame )
 	{
-		SetParent( GetClientModeASW()->m_hMissionCompleteFrame );
+		SetParent( GetClientModeASW()->m_hMissionCompleteFrame.Get() );
 	}
 	else if ( engine->IsConnected() )
 	{
@@ -938,7 +938,7 @@ void TGD_Grid::DisplayEntry( TGD_Entry *pEntry )
 	m_pParent->m_pHighlight->SetVisible( true );
 	m_pParent->m_pLabelHighlight->SetVisible( true );
 
-	if ( m_pParent->m_pParent->m_hCurrentTab != m_pParent )
+	if ( m_pParent->m_pParent->m_hCurrentTab.Get() != m_pParent )
 	{
 		m_pParent->m_pParent->m_hCurrentTab = m_pParent;
 		if ( m_pParent->m_pParent->m_pLastTabConVar )

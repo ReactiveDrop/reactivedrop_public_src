@@ -177,7 +177,7 @@ void CUtlSortVector<T, LessFunc>::QuickSort( LessFunc& less, int nLower, int nUp
 		ctx.m_pLessContext = m_pLessContext;
 		ctx.m_pLessFunc = &less;
 
-		qsort_s( Base(), Count(), sizeof(T), (QSortCompareFunc_t)&CUtlSortVector<T, LessFunc>::CompareHelper, &ctx );
+		qsort_s( this->Base(), this->Count(), sizeof(T), (QSortCompareFunc_t)&CUtlSortVector<T, LessFunc>::CompareHelper, &ctx );
 	}
 #else
 	typedef int (__cdecl *QSortCompareFunc_t)( const void *, const void *);

@@ -34,8 +34,8 @@ public:
 
 	virtual void FireGameEvent( IGameEvent *event );
 
-	void CASW_Holo_Sentry::InputEnable( inputdata_t &inputdata );
-	void CASW_Holo_Sentry::InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t &inputdata );
+	void InputDisable( inputdata_t &inputdata );
 
 private:
 	COutputEvent m_OnSentryPlaced;

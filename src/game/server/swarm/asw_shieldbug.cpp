@@ -657,7 +657,7 @@ int CASW_Shieldbug::MeleeAttack1Conditions( float flDot, float flDist )
 	return COND_CAN_MELEE_ATTACK1;
 }
 
-void CASW_Shieldbug::MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove )
+void CASW_Shieldbug::MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove )
 {
 	Vector vecForceDir;
 

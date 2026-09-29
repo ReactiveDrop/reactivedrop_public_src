@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -197,7 +197,7 @@ static char *UTIL_CopyString( const char *in )
 	return out;
 }
 
-char *UTIL_va(char *format, ...)
+char *UTIL_va(const char *format, ...)
 {
 	va_list		argptr;
 	static char	string[4][1024];

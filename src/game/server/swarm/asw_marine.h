@@ -513,7 +513,7 @@ public:
 	virtual void TookAmmoPickup( CBaseEntity* pAmmoPickup );
 	int GetAllAmmoCount( void );
 	int GetTotalAmmoCount(int iAmmoIndex);
-	int GetTotalAmmoCount(char *szName);
+	int GetTotalAmmoCount(const char *szName);
 	int GetWeaponAmmoCount(int iAmmoIndex);
 	int GetWeaponAmmoCount(char *szName);
 	void ThrowAmmo(int iInventorySlot, int iTargetMarine, int iAmmoType);	 // throwing ammo from the ammo bag

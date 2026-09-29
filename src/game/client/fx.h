@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -56,7 +56,7 @@ void FX_BugBlood( Vector &pos, Vector &dir, Vector &vWorldMins, Vector &vWorldMa
 void FX_Blood( Vector &pos, Vector &dir, float r, float g, float b, float a );
 void FX_CreateImpactDust( Vector &origin, Vector &normal );
 void FX_EnergySplash( const Vector &pos, const Vector &normal, int nFlags = FX_ENERGYSPLASH_DEFAULT );
-void FX_MicroExplosion( Vector &position, Vector &normal );
+void FX_MicroExplosion( const Vector &position, const Vector &normal );
 void FX_Explosion( Vector& origin, Vector& normal, char materialType );
 void FX_ConcussiveExplosion( Vector& origin, Vector& normal ); 
 void FX_DustImpact( const Vector &origin, trace_t *tr, int iScale );
@@ -84,7 +84,7 @@ public:
 	Vector			m_vPos;
 	QAngle			m_vAngles;
 	int				m_nEntIndex;
-	char			*m_pszSpriteName;
+	const char			*m_pszSpriteName;
 	float			m_flBeamWidth;
 	int				m_nBeams;
 	Vector			m_vColor;

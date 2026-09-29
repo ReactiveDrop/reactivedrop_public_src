@@ -870,7 +870,7 @@ int CASW_Marine::SelectTakeAmmoSchedule()
 		}
 	}
 
-	EHANDLE hAmmo = ( m_hTakeAmmo.Get() ? m_hTakeAmmo : ( m_hTakeAmmoDrop.Get() ? m_hTakeAmmoDrop : NULL ) );
+	EHANDLE hAmmo = m_hTakeAmmo.Get() ? EHANDLE( m_hTakeAmmo ) : ( m_hTakeAmmoDrop.Get() ? EHANDLE( m_hTakeAmmoDrop ) : EHANDLE() );
 
 	if ( hAmmo != NULL )
 	{

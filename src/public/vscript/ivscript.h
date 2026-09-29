@@ -1,4 +1,4 @@
-//========== Copyright © 2008, Valve Corporation, All rights reserved. ========
+//========== Copyright Â© 2008, Valve Corporation, All rights reserved. ========
 //
 // Purpose: VScript
 //
@@ -431,7 +431,7 @@ struct ScriptVariant_t
 		}
 	}
 
-	bool AssignTo( char **pDest )
+	bool AssignTo( const char **pDest )
 	{
 		DevWarning( "No free conversion of string or vector script variant right now\n" );
 		// If want to support this, probably need to malloc string and require free on other side [3/24/2008 tom]
@@ -996,9 +996,10 @@ public:
 
 	bool FunctionExists( const char *pszFunction )
 	{
+		HSCRIPT hFunction = NULL;
 		if ( GetVM() )
 		{
-			HSCRIPT hFunction = GetVM()->LookupFunction( pszFunction, m_hScope );
+			hFunction = GetVM()->LookupFunction( pszFunction, m_hScope );
 			GetVM()->ReleaseFunction( hFunction );
 		}
 		return ( hFunction != NULL ) ;

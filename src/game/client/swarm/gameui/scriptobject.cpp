@@ -1,4 +1,4 @@
-//===== Copyright © 1996-2005, Valve Corporation, All rights reserved. ======//
+//===== Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ======//
 //
 // Purpose: 
 //
@@ -860,7 +860,7 @@ bool CDescription::ReadFromBuffer( const char **pBuffer )
 	return true;
 }
 
-bool CDescription::InitFromFile( char *pszFileName )
+bool CDescription::InitFromFile( const char *pszFileName )
 {
 
 	// Load file into memory

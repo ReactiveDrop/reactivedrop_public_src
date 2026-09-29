@@ -954,7 +954,7 @@ void CASW_Drone_Advanced::StartTouch( CBaseEntity *pOther )
 	}
 }
 
-void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove )
+void CASW_Drone_Advanced::MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove )
 {
 	Vector vecForceDir;
 

@@ -467,7 +467,7 @@ int CASW_Marine::GetAllAmmoCount( void )
 }
 
 // include ammo in weapons this marine is carrying
-int	CASW_Marine::GetTotalAmmoCount( char *szName )
+int	CASW_Marine::GetTotalAmmoCount( const char *szName )
 {
 	return GetTotalAmmoCount( GetAmmoDef()->Index(szName) );
 }
