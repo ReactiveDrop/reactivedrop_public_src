@@ -991,7 +991,7 @@ void CAI_LeadBehavior::RunTask( const Task_t *pTask )
 
 //-------------------------------------
 
-bool CAI_LeadBehavior::Speak( AIConcept_t concept )
+bool CAI_LeadBehavior::Speak( AIConcept_t conceptName )
 {
 	CAI_Expresser *pExpresser = GetOuter()->GetExpresser();
 	if ( !pExpresser )
@@ -1002,7 +1002,7 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 		return false;
 
 	// If we haven't said the start speech, don't nag
-	bool bNag = ( FStrEq(concept,TLK_LEAD_COMINGBACK) || FStrEq(concept, TLK_LEAD_CATCHUP) || FStrEq(concept, TLK_LEAD_RETRIEVE) );
+	bool bNag = ( FStrEq(conceptName,TLK_LEAD_COMINGBACK) || FStrEq(conceptName, TLK_LEAD_CATCHUP) || FStrEq(conceptName, TLK_LEAD_RETRIEVE) );
 	if ( !m_hasspokenstart && bNag )
 		return false;
 
@@ -1013,7 +1013,7 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 		// We ignore nag timers for this, because the response rules will control refire rates.
 		CAI_PlayerAlly *pAlly = dynamic_cast<CAI_PlayerAlly*>(GetOuter());
 		if ( pAlly )
- 			return pAlly->SpeakIfAllowed( concept, GetConceptModifiers( concept ) );
+ 			return pAlly->SpeakIfAllowed( conceptName, GetConceptModifiers( conceptName ) );
 	}
 
 	// Don't spam Nags
@@ -1026,7 +1026,7 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 		}
 	}
 	
-	if ( pExpresser->Speak( concept, GetConceptModifiers( concept ) ) )
+	if ( pExpresser->Speak( conceptName, GetConceptModifiers( conceptName ) ) )
 	{
 		m_flSpeakNextNagTime = gpGlobals->curtime + LEAD_NAG_TIME;
 		return true;
