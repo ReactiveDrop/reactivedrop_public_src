@@ -1492,7 +1492,7 @@ public:
 				const ReactiveDropInventory::ItemDef_t *pDef = ReactiveDropInventory::GetItemDef( g_RD_Crafting_Material_Info[eMaterial].m_iItemDef );
 				char szErrorCode[16];
 				V_snprintf( szErrorCode, sizeof( szErrorCode ), "%d", eResult );
-				ClientPrint( NULL, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_crafting_pickup_error", pDef ? pDef->Name : "?err?",szErrorCode, UTIL_RD_EResultToString( eResult ) );
+				ClientPrint( NULL, ASW_HUD_PRINTTALKANDCONSOLE, "#rd_crafting_pickup_error", pDef ? (const char *)pDef->Name : "?err?",szErrorCode, UTIL_RD_EResultToString( eResult ) );
 			}
 #endif
 

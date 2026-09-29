@@ -46,7 +46,7 @@ public:
 
 	// movement
 	virtual Vector PickRandomDestination(float dist, Vector bias);
-	virtual void SetMoveTarget(Vector &vecTarget);
+	virtual void SetMoveTarget(const Vector &vecTarget);
 	virtual float GetIdealSpeed() const;
 	virtual float GetYawSpeed() const;
 	virtual float GetIdealYaw();
@@ -71,7 +71,7 @@ public:
 	int m_iState;
 
 	// attacking
-	virtual void MeleeAttack( float distance, float damage, QAngle &viewPunch, Vector &shove );
+	virtual void MeleeAttack( float distance, float damage, const QAngle &viewPunch, const Vector &shove );
 	virtual CBaseEntity		*CheckTraceHullAttack( float flDist, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float forceScale = 1.0f, bool bDamageAnyNPC = false );
 	virtual CBaseEntity		*CheckTraceHullAttack( const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float flForceScale = 1.0f, bool bDamageAnyNPC = false );
 	virtual void ReachedEndOfSequence();

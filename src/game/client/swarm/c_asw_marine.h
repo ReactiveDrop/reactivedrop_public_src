@@ -94,7 +94,7 @@ public:
 	// ammo
 	int GetAllAmmoCount( void );
 	int GetTotalAmmoCount(int iAmmoIndex);
-	int GetTotalAmmoCount(char *szName);
+	int GetTotalAmmoCount(const char *szName);
 	int GetWeaponAmmoCount(int iAmmoIndex);
 	int GetWeaponAmmoCount(char *szName);
 	int GetNumberOfWeaponsUsingAmmo(int iAmmoType);
@@ -271,7 +271,7 @@ public:
 	virtual bool TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
 	CNetworkVar(float, m_fInfestedTime);		// how many seconds of infestation we have left
 	CNetworkVar(float, m_fInfestedStartTime);	// when the marine first got infested
-	virtual void ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName );
+	virtual void ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName );
 	virtual C_ClientRagdoll* CreateClientRagdoll( bool bRestoring = false );
 	virtual C_BaseAnimating* BecomeRagdollOnClient();
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );

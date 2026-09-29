@@ -2282,16 +2282,16 @@ void CSceneEntity::InputInterjectResponse( inputdata_t &inputdata )
 		char modifiers[ 512 ];
 		Q_snprintf( modifiers, sizeof( modifiers ), "scene:%s", STRING( GetEntityName() ) );
 
-		AIConcept_t concept(inputdata.value.String());
+		AIConcept_t conceptName(inputdata.value.String());
 		for ( int i = 0; i < c; i++ )
 		{
 			CAI_BaseActor *npc = candidates[ i ];
 			Assert( npc );
 
 			AI_CriteriaSet set; 
-			npc->GatherCriteria( &set, concept, modifiers );
+			npc->GatherCriteria( &set, conceptName, modifiers );
 			AI_Response response;
-			if ( !npc->FindResponse( response, concept, &set ) )
+			if ( !npc->FindResponse( response, conceptName, &set ) )
 				continue;
 
 			float duration = npc->GetResponseDuration( &response );
@@ -3453,7 +3453,7 @@ void MissingSceneWarning( char const *scenename )
 	static CUtlSymbolTable missing;
 
 	// Make sure we only show the message once
-	if ( UTL_INVAL_SYMBOL == missing.Find( scenename ) )
+	if ( !missing.Find( scenename ).IsValid() )
 	{
 		missing.AddString( scenename );
 
@@ -4755,7 +4755,7 @@ END_DATADESC()
 int SceneNameAutocomplete( char const *partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] )
 {
 	// chop the command off the begining of the string
-	char *commandName = "scene_playvcd";
+	const char *commandName = "scene_playvcd";
 	int numMatches = 0;
 	partial += Q_strlen( commandName ) + 1;
 	int partialLength = Q_strlen( partial );

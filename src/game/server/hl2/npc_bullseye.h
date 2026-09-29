@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright Â© 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -34,7 +34,7 @@ public:
 	Class_T Classify( void );
 	void	Event_Killed( const CTakeDamageInfo &info );
 	void	DecalTrace( trace_t *pTrace, char const *decalName );
-	void	ImpactTrace( trace_t *pTrace, int iDamageType, char *pCustomImpactName );
+	void	ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName );
 	bool	IsLightDamage( const CTakeDamageInfo &info );
 	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
 	int		OnTakeDamage( const CTakeDamageInfo &info );

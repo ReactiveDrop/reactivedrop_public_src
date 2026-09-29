@@ -236,7 +236,7 @@ void UTIL_RD_ReadLobbyScoreboard( CSteamID lobby, CUtlVector<RD_Lobby_Scoreboard
 		if ( PlayerInfo.Count() == 3 )
 		{
 			// temp add a dummy country code to get scoreboards working before release
-			PlayerInfo.AddToTail( "XX" );
+			PlayerInfo.AddToTail( (char *)"XX" );
 		}
 		Assert( PlayerInfo.Count() == 4 );
 		if ( PlayerInfo.Count() != 4 )
