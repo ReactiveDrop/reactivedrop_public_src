@@ -2167,8 +2167,7 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 													AIN_DEF_FLAGS,
 													m_hStoredPathTarget );
 
-							// TODO: is this a bug? why goal and not coverGoal?
-							foundPath = GetNavigator()->SetGoal( goal );
+							foundPath = GetNavigator()->SetGoal( coverGoal );
 
 							m_flMoveWaitFinished = gpGlobals->curtime + pTask->flTaskData;
 						}
