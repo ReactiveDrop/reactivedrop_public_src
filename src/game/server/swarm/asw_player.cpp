@@ -1362,7 +1362,7 @@ bool CASW_Player::ClientCommand( const CCommand &args )
 				int iValue = V_atoi( args[4] );
 
 				CRD_VGui_VScript *pEnt = dynamic_cast< CRD_VGui_VScript * >( CBaseEntity::Instance( iEntity ) );
-				if ( !pEnt || pEnt->m_iRandomCheck != iCheck || !pEnt->m_hInteracter || GetNPC() != pEnt->m_hInteracter )
+				if ( !pEnt || pEnt->m_iRandomCheck != iCheck || ( !pEnt->m_bAnyoneCanInteract && ( !pEnt->m_hInteracter || GetNPC() != pEnt->m_hInteracter ) ) )
 				{
 					Warning( "Player %s sent a bad cl_vgui_vscript_input command\n", GetASWNetworkID() );
 					return false;
