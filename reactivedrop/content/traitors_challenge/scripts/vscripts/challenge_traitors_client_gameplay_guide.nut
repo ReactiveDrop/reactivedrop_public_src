@@ -25,15 +25,13 @@ GUIDE_PAGE_ROLES <- 3;
 GUIDE_PAGE_TIPS <- 4;
 GUIDE_MAIN_BUTTON_COUNT <- 4;
 GUIDE_BACK_BUTTON_INDEX <- 4;
-GUIDE_TIP_COUNT <- 11;
 
 // These are the complete public guide vocabulary.  Do not put guide prose in
 // this script: all text comes from challenge_traitors_translations_all.nut.
 // Keys are stored without '#'.  GetGuideTableString also accepts a leading
 // '#' so older callers and both formal/test scripts use the same lookup path.
 GUIDE_KEY_TITLE <- "challenge_traitors_guide_title";
-GUIDE_KEY_INTRO <- "challenge_traitors_guide_intro";
-GUIDE_KEY_INTRO_PARTS <- [
+GUIDE_KEYS_INTRO <- [
 	"challenge_traitors_guide_intro_01",
 	"challenge_traitors_guide_intro_02",
 	"challenge_traitors_guide_intro_03",
@@ -45,8 +43,7 @@ GUIDE_KEY_MECHANICS_BUTTON <- "challenge_traitors_guide_mechanics_button";
 GUIDE_KEY_ROLES_BUTTON <- "challenge_traitors_guide_roles_button";
 GUIDE_KEY_TIPS_BUTTON <- "challenge_traitors_guide_tips_button";
 GUIDE_KEY_TEAM_TITLE <- "challenge_traitors_guide_team_objectives_title";
-GUIDE_KEY_TEAM_TEXT <- "challenge_traitors_guide_team_objectives_text";
-GUIDE_KEY_TEAM_TEXT_PARTS <- [
+GUIDE_KEYS_TEAM_TEXT <- [
 	"challenge_traitors_guide_team_objectives_text_01",
 	"challenge_traitors_guide_team_objectives_text_02",
 	"challenge_traitors_guide_team_objectives_text_03",
@@ -59,8 +56,7 @@ GUIDE_KEY_TEAM_TEXT_PARTS <- [
 	"challenge_traitors_guide_team_objectives_text_10"
 ];
 GUIDE_KEY_MECHANICS_TITLE <- "challenge_traitors_guide_mechanics_title";
-GUIDE_KEY_MECHANICS_TEXT <- "challenge_traitors_guide_mechanics_text";
-GUIDE_KEY_MECHANICS_TEXT_PARTS <- [
+GUIDE_KEYS_MECHANICS_TEXT <- [
 	"challenge_traitors_guide_mechanics_text_01",
 	"challenge_traitors_guide_mechanics_text_02",
 	"challenge_traitors_guide_mechanics_text_03",
@@ -75,8 +71,7 @@ GUIDE_KEY_MECHANICS_TEXT_PARTS <- [
 	"challenge_traitors_guide_mechanics_text_12"
 ];
 GUIDE_KEY_ROLES_TITLE <- "challenge_traitors_guide_roles_title";
-GUIDE_KEY_ROLES_TEXT <- "challenge_traitors_guide_roles_text";
-GUIDE_KEY_ROLES_TEXT_PARTS <- [
+GUIDE_KEYS_ROLES_TEXT <- [
 	"challenge_traitors_guide_roles_text_01",
 	"challenge_traitors_guide_roles_text_02",
 	"challenge_traitors_guide_roles_text_03",
@@ -95,17 +90,19 @@ GUIDE_KEY_ROLES_TEXT_PARTS <- [
 	"challenge_traitors_guide_roles_text_16"
 ];
 GUIDE_KEY_TIPS_TITLE <- "challenge_traitors_guide_tips_title";
-GUIDE_KEY_TIP_01 <- "challenge_traitors_guide_tip_01";
-GUIDE_KEY_TIP_02 <- "challenge_traitors_guide_tip_02";
-GUIDE_KEY_TIP_03 <- "challenge_traitors_guide_tip_03";
-GUIDE_KEY_TIP_04 <- "challenge_traitors_guide_tip_04";
-GUIDE_KEY_TIP_05 <- "challenge_traitors_guide_tip_05";
-GUIDE_KEY_TIP_06 <- "challenge_traitors_guide_tip_06";
-GUIDE_KEY_TIP_07 <- "challenge_traitors_guide_tip_07";
-GUIDE_KEY_TIP_08 <- "challenge_traitors_guide_tip_08";
-GUIDE_KEY_TIP_09 <- "challenge_traitors_guide_tip_09";
-GUIDE_KEY_TIP_10 <- "challenge_traitors_guide_tip_10";
-GUIDE_KEY_TIP_11 <- "challenge_traitors_guide_tip_11";
+GUIDE_KEYS_TIPS <- [
+	"challenge_traitors_guide_tip_01",
+	"challenge_traitors_guide_tip_02",
+	"challenge_traitors_guide_tip_03",
+	"challenge_traitors_guide_tip_04",
+	"challenge_traitors_guide_tip_05",
+	"challenge_traitors_guide_tip_06",
+	"challenge_traitors_guide_tip_07",
+	"challenge_traitors_guide_tip_08",
+	"challenge_traitors_guide_tip_09",
+	"challenge_traitors_guide_tip_10",
+	"challenge_traitors_guide_tip_11"
+];
 
 FONT_GUIDE_TITLE <- self.LookupFont("DefaultLarge");
 FONT_GUIDE_BODY <- self.LookupFont("DefaultSmall");
@@ -224,6 +221,14 @@ function ResolveGuideString(key) {
 		result = GetGuideTableString("english", key);
 	}
 	return result == null ? "#" + (key.len() > 0 && key.slice(0, 1) == "#" ? key.slice(1) : key) : result;
+}
+
+function ResolveGuideStrings(keys) {
+	local result = [];
+	for (local i = 0; i < keys.len(); i++) {
+		result.append(ResolveGuideString(keys[i]));
+	}
+	return result;
 }
 
 function ResolveGuideParts(partKeys, separator = "\n") {
@@ -351,31 +356,19 @@ function WrapGuideText(text, font, width) {
 
 function RefreshGuideContent() {
 	guideTitle = ResolveGuideString(GUIDE_KEY_TITLE);
-	guideIntro = ResolveGuideParts(GUIDE_KEY_INTRO_PARTS);
+	guideIntro = ResolveGuideParts(GUIDE_KEYS_INTRO);
 	guideTeamButton = ResolveGuideString(GUIDE_KEY_TEAM_BUTTON);
 	guideMechanicsButton = ResolveGuideString(GUIDE_KEY_MECHANICS_BUTTON);
 	guideRolesButton = ResolveGuideString(GUIDE_KEY_ROLES_BUTTON);
 	guideTipsButton = ResolveGuideString(GUIDE_KEY_TIPS_BUTTON);
 	guideTeamTitle = ResolveGuideString(GUIDE_KEY_TEAM_TITLE);
-	guideTeamText = ResolveGuideParts(GUIDE_KEY_TEAM_TEXT_PARTS);
+	guideTeamText = ResolveGuideParts(GUIDE_KEYS_TEAM_TEXT);
 	guideMechanicsTitle = ResolveGuideString(GUIDE_KEY_MECHANICS_TITLE);
-	guideMechanicsText = ResolveGuideParts(GUIDE_KEY_MECHANICS_TEXT_PARTS);
+	guideMechanicsText = ResolveGuideParts(GUIDE_KEYS_MECHANICS_TEXT);
 	guideRolesTitle = ResolveGuideString(GUIDE_KEY_ROLES_TITLE);
-	guideRolesText = ResolveGuideParts(GUIDE_KEY_ROLES_TEXT_PARTS);
+	guideRolesText = ResolveGuideParts(GUIDE_KEYS_ROLES_TEXT);
 	guideTipsTitle = ResolveGuideString(GUIDE_KEY_TIPS_TITLE);
-	guideTips = [
-		ResolveGuideString(GUIDE_KEY_TIP_01),
-		ResolveGuideString(GUIDE_KEY_TIP_02),
-		ResolveGuideString(GUIDE_KEY_TIP_03),
-		ResolveGuideString(GUIDE_KEY_TIP_04),
-		ResolveGuideString(GUIDE_KEY_TIP_05),
-		ResolveGuideString(GUIDE_KEY_TIP_06),
-		ResolveGuideString(GUIDE_KEY_TIP_07),
-		ResolveGuideString(GUIDE_KEY_TIP_08),
-		ResolveGuideString(GUIDE_KEY_TIP_09),
-		ResolveGuideString(GUIDE_KEY_TIP_10),
-		ResolveGuideString(GUIDE_KEY_TIP_11)
-	];
+	guideTips = ResolveGuideStrings(GUIDE_KEYS_TIPS);
 
 	if (page == GUIDE_PAGE_TEAM_OBJECTIVES) {
 		detailTitle = guideTeamTitle;
@@ -399,7 +392,7 @@ function RefreshGuideContent() {
 		// Wrap each tip independently so token order is stable without adding
 		// blank separator lines that would consume the no-scroll layout.
 		bodyLines = [];
-		for (local i = 0; i < GUIDE_TIP_COUNT; i++) {
+		for (local i = 0; i < guideTips.len(); i++) {
 			local tipLines = WrapGuideText(guideTips[i], FONT_GUIDE_BODY, wrapWidth);
 			foreach (line in tipLines) {
 				if (line != "") {
