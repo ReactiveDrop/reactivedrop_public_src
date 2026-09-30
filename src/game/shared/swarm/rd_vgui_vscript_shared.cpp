@@ -50,10 +50,12 @@ BEGIN_NETWORK_TABLE( CRD_VGui_VScript, DT_RD_VGui_VScript )
 	RecvPropInt( RECVINFO( m_iRandomCheck ) ),
 	RecvPropEHandle( RECVINFO( m_hInteracter ) ),
 	RecvPropInt( RECVINFO( m_iSequenceAck ) ),
+	RecvPropBool( RECVINFO( m_bAnyoneCanInteract ) ),
 #else
 	SendPropInt( SENDINFO( m_iRandomCheck ) ),
 	SendPropEHandle( SENDINFO( m_hInteracter ) ),
 	SendPropInt( SENDINFO( m_iSequenceAck ) ),
+	SendPropBool( SENDINFO( m_bAnyoneCanInteract ) ),
 #endif
 END_NETWORK_TABLE();
 
@@ -68,6 +70,7 @@ BEGIN_ENT_SCRIPTDESC( CRD_VGui_VScript, CRD_HUD_VScript, "Alien Swarm: Reactive 
 	DEFINE_SCRIPTFUNC( CreateButton, "Creates a button that can be targeted by both the mouse and the controller." )
 #else
 	DEFINE_SCRIPTFUNC( SetInteracter, "Sets the character who is allowed to interact with this screen." )
+	DEFINE_SCRIPTFUNC( SetAnyoneCanInteract, "If set to true, Control function runs for spectators and they can send inputs." )
 #endif
 	DEFINE_SCRIPTFUNC( GetInteracter, "Gets the character who is allowed to interact with this screen." )
 END_SCRIPTDESC();
@@ -204,6 +207,7 @@ CRD_VGui_VScript::CRD_VGui_VScript()
 {
 	m_hInteracter = NULL;
 	m_iSequenceAck = 0;
+	m_bAnyoneCanInteract = false;
 
 #ifdef CLIENT_DLL
 	s_InteractiveHUDEntities.AddToTail( this );
@@ -495,6 +499,9 @@ void CRD_VGui_VScript::ResetPrediction()
 
 bool CRD_VGui_VScript::AllowedToInteract()
 {
+	if ( m_bAnyoneCanInteract )
+		return true;
+	
 	ASSERT_LOCAL_PLAYER_RESOLVABLE();
 
 	C_BaseEntity *pOwner = GetPredictionOwner();
@@ -674,6 +681,11 @@ void CRD_VGui_VScript::SetInteracter( HSCRIPT interacter )
 	}
 
 	m_hInteracter = assert_cast< CASW_Inhabitable_NPC * >( pInteracter );
+}
+
+void CRD_VGui_VScript::SetAnyoneCanInteract( bool bAnyone )
+{
+	m_bAnyoneCanInteract = bAnyone;
 }
 
 void CRD_VGui_VScript::RunVScripts()

@@ -79,6 +79,7 @@ public:
 	virtual void OnInput( int sequence, int value );
 	void SetInteracter( HSCRIPT interacter );
 	virtual bool AllowSetInteracter() { return true; }
+	void SetAnyoneCanInteract( bool bEveryone );
 
 	void RunVScripts() override;
 #endif
@@ -89,6 +90,7 @@ public:
 	CNetworkVar( int, m_iRandomCheck );
 	CNetworkHandle( CASW_Inhabitable_NPC, m_hInteracter );
 	CNetworkVar( int, m_iSequenceAck );
+	CNetworkVar( bool, m_bAnyoneCanInteract );
 
 	bool m_bIsInput{ false };
 
