@@ -2064,6 +2064,9 @@ static bool StartsWith( const char *str, const char *pre )
 
 bool CASW_Steamstats::IsLBWhitelisted( const char *name )
 {
+	return true;
+	
+	/*
 	bool r = false;
 
 	for ( size_t i = 0; i < ARRAYSIZE( LB_whitelist ); ++i )
@@ -2076,6 +2079,7 @@ bool CASW_Steamstats::IsLBWhitelisted( const char *name )
 	}
 
 	return r;
+	*/
 }
 
 void CASW_Steamstats::GlobalStatsReceivedCallback( GlobalStatsReceived_t *pResult, bool bIOFailure )
